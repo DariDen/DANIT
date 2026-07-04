@@ -1,1 +1,11 @@
+  GNU nano 8.7.1                                 script2.sh                                           
+#!/bin/bash
+
+echo "Give me your name!!!"
+read name
+echo "Thanks, $name"
+
+
+
+
 
