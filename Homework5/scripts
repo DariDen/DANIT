@@ -7,5 +7,55 @@ echo "Thanks, $name"
 
 
 
+ GNU nano 8.7.1                                                       script3.sh                                                                
+#!/bin/bash
+
+files=$(find . -maxdepth 1 -type f)
+if  [[ -n "$files" ]]; then
+        echo -e "There if files:\n$files"
+else
+        echo "No files here"
+fi
+
+
+
+ GNU nano 8.7.1                                                       script4.sh                                                                
+#!/bin/bash
+
+for i in {1..10}; do
+    echo "$i"
+done
+
+
+ GNU nano 8.7.1                                                       script5.sh                                                                
+#!/bin/bash
+
+
+echo "Please input source path for file (including file name)"
+read source
+
+if ! cat "$source">/dev/null 2>&1; then
+    echo "No such file"
+    exit 1
+fi
+
+echo "Please input destination path for file"
+read destination
+
+if ! ls "$destination">/dev/null 2>&1; then
+    echo "Please check destination path"
+    exit 1
+fi
+
+if cp "$source" "$destination"; then
+         echo "File copied successfully."
+fi
+
+
+
+
+
+
+
 
 
