@@ -66,6 +66,20 @@ fi
 
 
 
+  GNU nano 8.7.1                                                                       script9.sh                                                                                
+#!/bin/bash
+
+echo "Please enter file path"
+read file_name
+
+echo 
+
+if  ! cat "$file_name" 2>/dev/null; then
+    echo "File '$file_name' does not exist."
+    exit 1
+fi
+
+
 
 
 
