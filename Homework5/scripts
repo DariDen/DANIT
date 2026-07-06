@@ -52,6 +52,18 @@ if cp "$source" "$destination"; then
 fi
 
 
+  GNU nano 8.7.1                                                                       script7.sh                                                                                
+#!/bin/bash
+
+echo "Please enter file name with path"
+read file_name
+if [[ ! -f "$file_name" ]]; then
+    echo "File does not exist"
+    exit 1
+else
+        lines=$(wc -l < "$file_name") && echo "Number of lines: $lines"
+fi
+
 
 
 
