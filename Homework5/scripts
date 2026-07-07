@@ -80,6 +80,23 @@ if  ! cat "$file_name" 2>/dev/null; then
 fi
 
 
+ GNU nano 8.7.1                                                            script6.sh                                                                     
+#!/bin/bash
+
+echo "Enter a sentence:"
+read sentence
+
+words=($sentence)
+
+for (( i=${#words[@]}-1; i>=0; i-- ))
+do
+    echo -n "${words[$i]} "
+done
+
+echo
+
+
+
 
 
 
