@@ -97,6 +97,19 @@ echo
 
 
 
+  GNU nano 8.7.1                                                            script8.sh                                                                     
+#!/bin/bash
+
+fruits=(apple grape banana)
+
+i=0
+
+while [[ $i -le ${#fruits[@]}-1 ]]; do
+    echo "${fruits[$i]}"
+    ((i++))
+
+done
+
 
 
 
