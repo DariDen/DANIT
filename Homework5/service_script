@@ -1,0 +1,17 @@
+ GNU nano 8.7.1                                                                          watch/watcher.sh                                                                                    
+#!/bin/bash
+
+WATCH_DIR="$HOME/watch"
+
+mkdir -p "$WATCH_DIR"
+
+inotifywait -m -e create --format "%f" "$WATCH_DIR" | while read FILE
+do
+        FULL_PATH="$WATCH_DIR/$FILE"
+        echo  "===== $FILE ====="
+        cat "$FULL_PATH" 
+        mv "$FULL_PATH" "${FULL_PATH}.back"
+done
+
+
+
