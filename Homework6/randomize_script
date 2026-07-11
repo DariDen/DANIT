@@ -1,0 +1,25 @@
+  GNU nano 8.7.1                                                                  randomize_script.sh                                                                           
+#!/bin/bash
+
+number=$(shuf -i 1-100 -n 1)
+max_attempt=5
+
+for ((i=1; i<=max_attempt; i++)); do
+
+    echo "Guess the number (1-100):"
+    read user_guess
+
+    if [ "$user_guess" -eq "$number" ]; then
+        echo "Congratulations! You guessed the right number."
+        exit 0
+    elif [ "$user_guess" -gt "$number" ]; then
+        echo "Too high"
+    else
+        echo "Too low"
+    fi
+done
+
+echo "Sorry, you've run out of attempts. The correct number was $number."
+exit 1
+
+
