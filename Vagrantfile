@@ -1,0 +1,87 @@
+
+require 'dotenv'
+Dotenv.load
+
+Vagrant.configure("2") do |config|
+  
+  config.vm.box = "bento/ubuntu-22.04"
+  
+  # -------------------------------------------------------------
+  # VM 1: DB_VM 
+  # -------------------------------------------------------------
+ 
+  config.vm.define "DB_VM" do |db_vm|
+    db_vm.vm.hostname = "DB-VM"
+    db_vm.vm.network "private_network", ip: "192.168.56.11"
+    
+    db_vm.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.name = "DB_VM"
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+
+    db_vm.vm.provision "shell", env: {
+      "DB_NAME" => ENV['DB_NAME'],
+      "DB_USER" => ENV['DB_USER'],
+      "DB_PASS" => ENV['DB_PASS'] }, inline: <<-SHELL
+
+      set -euox pipefail
+      apt update
+      apt install -y mysql-server --no-install-recommends --no-install-suggests
+      ss -tulpn | grep -E "Address|3306"
+      sed -i "s/bind-address.*/bind-address = 127.0.0.1,192.168.56.11/" /etc/mysql/mysql.conf.d/mysqld.cnf
+      systemctl restart mysql
+      ss -tulpn | grep -E "Address|3306"
+      mysql -e "CREATE DATABASE ${DB_NAME};"
+      mysql -e "CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}';"
+      mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
+      mysql -e "FLUSH PRIVILEGES;"
+      mysql -e "select user, host from mysql.user;"
+      
+    SHELL
+  
+  end
+    
+  # -------------------------------------------------------------
+  # VM 2: APP_VM 
+  # -------------------------------------------------------------
+  
+  config.vm.define "APP_VM" do |app_vm|
+    app_vm.vm.hostname = "APP-VM"
+    app_vm.vm.network "private_network", ip: "192.168.56.10"
+    
+    app_vm.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.name = "APP_VM"
+      vb.memory = 4096 
+      vb.cpus = 2
+    end
+
+
+    app_vm.vm.provision "shell", env: {
+      "MYSQL_URL"  => ENV['MYSQL_URL'],
+      "MYSQL_USER" => ENV['MYSQL_USER'],
+      "MYSQL_PASS" => ENV['MYSQL_PASS'] }, inline: <<-SHELL 
+      export SPRING_DATASOURCE_URL="${MYSQL_URL}"
+      export SPRING_DATASOURCE_USERNAME="${MYSQL_USER}"
+      export SPRING_DATASOURCE_PASSWORD="${MYSQL_PASS}"
+
+      set -euox pipefail
+      useradd -m -s /bin/bash dasha
+      apt update
+      apt install -y default-jdk git
+      git clone https://oauth2:glpat-EOOIFvhcPFiGDGakpuqH7mM6MQpvOjEKdTpuYXA0ZQ8.01.17005r9rs@gitlab.com/dan-it/groups/devops_soft.git /home/dasha/project_dir/
+      cd /home/dasha/project_dir/forStep1/PetClinic/
+      chmod +x mvnw
+      ./mvnw package -DskipTests   
+      mkdir /home/dasha/app_dir
+      mv target/*.jar /home/dasha/app_dir/
+      chown -R dasha:dasha /home/dasha/
+      sudo -E -u dasha java -jar /home/dasha/app_dir/*.jar --spring.profiles.active=mysql &
+      
+    SHELL
+  
+  end
+
+end
