@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
       mkdir /home/dasha/app_dir
       mv target/*.jar /home/dasha/app_dir/
       chown -R dasha:dasha /home/dasha/
-      sudo -E -u dasha java -jar /home/dasha/app_dir/*.jar --spring.profiles.active=mysql &
+      sudo -E -u dasha java -jar /home/dasha/app_dir/*.jar --spring.profiles.active=mysql 
       
     SHELL
   
