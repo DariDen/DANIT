@@ -3,7 +3,7 @@ require 'dotenv'
 Dotenv.load
 
 Vagrant.configure("2") do |config|
-  
+
   config.vm.box = "bento/ubuntu-22.04"
   
   # -------------------------------------------------------------
@@ -62,7 +62,8 @@ Vagrant.configure("2") do |config|
     app_vm.vm.provision "shell", env: {
       "MYSQL_URL"  => ENV['MYSQL_URL'],
       "MYSQL_USER" => ENV['MYSQL_USER'],
-      "MYSQL_PASS" => ENV['MYSQL_PASS'] }, inline: <<-SHELL 
+      "MYSQL_PASS" => ENV['MYSQL_PASS'],
+      "GITLAB_TOKEN" => ENV['GITLAB_TOKEN'] }, inline: <<-SHELL 
       export SPRING_DATASOURCE_URL="${MYSQL_URL}"
       export SPRING_DATASOURCE_USERNAME="${MYSQL_USER}"
       export SPRING_DATASOURCE_PASSWORD="${MYSQL_PASS}"
@@ -70,15 +71,15 @@ Vagrant.configure("2") do |config|
       set -euox pipefail
       useradd -m -s /bin/bash dasha
       apt update
-      apt install -y default-jdk git
-      git clone https://oauth2:glpat-EOOIFvhcPFiGDGakpuqH7mM6MQpvOjEKdTpuYXA0ZQ8.01.17005r9rs@gitlab.com/dan-it/groups/devops_soft.git /home/dasha/project_dir/
+      apt install -y default-jdk git mysql-client
+      git clone https://oauth2:${GITLAB_TOKEN}@gitlab.com/dan-it/groups/devops_soft.git /home/dasha/project_dir/
       cd /home/dasha/project_dir/forStep1/PetClinic/
       chmod +x mvnw
       ./mvnw package -DskipTests   
       mkdir /home/dasha/app_dir
       mv target/*.jar /home/dasha/app_dir/
       chown -R dasha:dasha /home/dasha/
-      sudo -E -u dasha java -jar /home/dasha/app_dir/*.jar --spring.profiles.active=mysql 
+      sudo -E -u dasha java -jar /home/dasha/app_dir/*.jar --spring.profiles.active=mysql
       
     SHELL
   
